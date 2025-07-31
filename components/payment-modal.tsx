@@ -67,7 +67,7 @@ export function PaymentModal({
       const result = await pay({
         amount: '0.20',
         to: '0xAbF01df9428EaD5418473A7c91244826A3Af23b3',
-        testnet: true
+        testnet: process.env.NEXT_PUBLIC_BASE_PAY_TESTNET === 'true'
       })
       
       // Handle different result types and ensure we have a valid payment ID
