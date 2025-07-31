@@ -66,25 +66,22 @@ export default function ImageTransformer() {
   return (
     <>
       <div className="min-h-screen bg-#fafafa p-6">
-        <div className="max-w-4xl mx-auto space-y-8">
+        <div className="max-w-2xl mx-auto space-y-8">
           {/* Header */}
           <div className="text-center space-y-2">
-            <h1 className="text-4xl font-bold text-#1a1a1a">
+            <h1 className="text-3xl font-bold text-#1a1a1a">
               Base Pay Demo
             </h1>
-            <p className="text-#666666 text-lg">
+            <p className="text-#666666 text-base">
               Upload an image and describe how you want it transformed
             </p>
             {/* Pricing Display */}
-            <div className="flex items-center justify-center gap-2 mt-4 p-3 bg-#fff9f6 border border-#ff6b35 rounded-lg">
-              <DollarSign className="w-5 h-5 text-#ff6b35" />
-              <span className="text-lg font-semibold text-#ff6b35">$0.20 per image</span>
-            </div>
+
           </div>
 
           {/* Main Container */}
           <Card className="border border-#e5e5e5 shadow-sm">
-            <CardContent className="p-8 space-y-8">
+            <CardContent className="p-6 space-y-6">
               
               {/* Upload or Image Display Section */}
               <div className="space-y-4">
@@ -92,9 +89,9 @@ export default function ImageTransformer() {
                 {!previewUrl ? (
                   // Upload Area - only show when no image
                   <>
-                    <h2 className="text-xl font-semibold text-#333333">Upload Image</h2>
+                    <h2 className="text-lg font-semibold text-#333333">Upload Image</h2>
                     
-                    <div className="border-2 border-dashed border-#d4d4d4 rounded-lg p-12 text-center hover:border-#ff6b35 hover:bg-#fff9f6 transition-all duration-200">
+                    <div className="border-2 border-dashed border-#d4d4d4 rounded-lg p-4 text-center hover:border-#ff6b35 hover:bg-#fff9f6 transition-all duration-200">
                       <input 
                         type="file" 
                         accept="image/*" 
@@ -102,11 +99,11 @@ export default function ImageTransformer() {
                         className="hidden" 
                         id="file-upload" 
                       />
-                      <label htmlFor="file-upload" className="cursor-pointer flex flex-col items-center space-y-4">
-                        <Upload className="w-16 h-16 text-#999999" />
-                        <div className="space-y-2">
-                          <p className="text-#333333 font-medium text-lg">Click to upload or drag and drop</p>
-                          <p className="text-#999999">PNG, JPG, JPEG, WebP up to 10MB</p>
+                      <label htmlFor="file-upload" className="cursor-pointer flex flex-col items-center space-y-2">
+                        <Upload className="w-8 h-8 text-#999999" />
+                        <div className="space-y-1">
+                          <p className="text-#333333 font-medium text-sm">Click to upload or drag and drop</p>
+                          <p className="text-#999999 text-xs">PNG, JPG, JPEG, WebP up to 10MB</p>
                         </div>
                       </label>
                     </div>
@@ -115,7 +112,7 @@ export default function ImageTransformer() {
                   // Image Preview - replaces upload area when image is selected
                   <>
                     <div className="flex items-center justify-between">
-                      <h2 className="text-xl font-semibold text-#333333">Selected Image</h2>
+                      <h2 className="text-lg font-semibold text-#333333">Selected Image</h2>
                       <button
                         onClick={handleRemoveImage}
                         className="p-2 text-#999999 hover:text-#ff6b35 hover:bg-#fff9f6 rounded-full transition-all duration-200"
@@ -129,7 +126,7 @@ export default function ImageTransformer() {
                       <img
                         src={previewUrl}
                         alt="Selected image"
-                        className="w-full h-auto max-h-96 object-contain mx-auto"
+                        className="w-full h-auto max-h-64 object-contain mx-auto"
                       />
                     </div>
                     
@@ -147,20 +144,20 @@ export default function ImageTransformer() {
               <div className="border-t border-#e5e5e5"></div>
 
               {/* Prompt Section */}
-              <div className="space-y-6">
-                <h2 className="text-xl font-semibold text-#333333">Transformation Prompt</h2>
+              <div className="space-y-2">
+                <h2 className="text-lg font-semibold text-#333333">Transformation Prompt</h2>
                 
                 <Textarea
                   placeholder="Describe how you want to transform your image..."
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
-                  className="min-h-24 resize-none border-#d4d4d4 focus:border-#ff6b35 focus:ring-#ff6b35 focus:ring-opacity-20 text-#333333 placeholder:text-#999999"
+                  className="min-h-12 resize-none border-#d4d4d4 focus:border-#ff6b35 focus:ring-#ff6b35 focus:ring-opacity-20 text-#333333 placeholder:text-#999999"
                 />
 
                 {/* Example Prompts as Gray Buttons */}
-                <div className="space-y-3">
+                <div className="space-y-4 mt-6">
                   <p className="text-sm font-medium text-#666666">Example prompts:</p>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 gap-4">
                     {examplePrompts.map((example, index) => (
                       <Button3D
                         key={index}
@@ -182,13 +179,13 @@ export default function ImageTransformer() {
                 <Button3D
                   onClick={handleStartPayment}
                   variant="default"
-                  size="lg"
-                  className="w-full flex items-center justify-center gap-3 text-lg font-semibold py-4"
+                  size="default"
+                  className="w-full flex items-center justify-center gap-3 text-base font-semibold py-3"
                   style={{
                     background: 'linear-gradient(to bottom, #ff6b35, #e55a2e)'
                   }}
                 >
-                  <DollarSign className="w-5 h-5" />
+                  <DollarSign className="w-4 h-4" />
                   Create Image ($0.20)
                 </Button3D>
               </div>
