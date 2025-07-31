@@ -70,7 +70,7 @@ export default function ImageTransformer() {
           {/* Header */}
           <div className="text-center space-y-2">
             <h1 className="text-4xl font-bold text-#1a1a1a">
-              AI Image Transformer
+              Base Pay Demo
             </h1>
             <p className="text-#666666 text-lg">
               Upload an image and describe how you want it transformed
