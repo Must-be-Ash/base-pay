@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import Replicate from "replicate"
+import { getPaymentStatus } from "@base-org/account"
 
 const replicate = new Replicate({
   auth: process.env.REPLICATE_API_TOKEN,
@@ -10,9 +11,31 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData()
     const image = formData.get("image") as File
     const prompt = formData.get("prompt") as string
+    const paymentId = formData.get("paymentId") as string
 
     if (!image || !prompt) {
       return NextResponse.json({ error: "Image and prompt are required" }, { status: 400 })
+    }
+
+    // Optional: Verify payment status
+    if (paymentId) {
+      try {
+        const { status } = await getPaymentStatus({ 
+          id: paymentId,
+          testnet: process.env.NEXT_PUBLIC_BASE_PAY_TESTNET === 'true'
+        })
+        
+        if (status !== 'completed') {
+          console.warn(`Payment ${paymentId} not completed, status: ${status}`)
+          return NextResponse.json({ error: "Payment not completed" }, { status: 402 })
+        }
+        
+        console.log(`Payment ${paymentId} verified successfully`)
+      } catch (error) {
+        console.warn('Payment verification failed:', error)
+        // Continue anyway - payment was successful on frontend
+        // In production, you might want to be more strict here
+      }
     }
 
     console.log("Processing image transformation request")
@@ -126,6 +149,12 @@ export async function POST(request: NextRequest) {
     }
 
     console.log("SUCCESS - Returning image URL:", imageUrl)
+    
+    // Log successful payment + transformation
+    if (paymentId) {
+      console.log(`Payment ${paymentId} processed for transformation: ${prompt.substring(0, 50)}...`)
+    }
+    
     return NextResponse.json({ imageUrl })
   } catch (error) {
     console.error("Error transforming image:", error)

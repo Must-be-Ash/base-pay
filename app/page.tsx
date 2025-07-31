@@ -5,18 +5,16 @@ import type React from "react"
 import { useState } from "react"
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent } from "@/components/ui/card"
-import { Upload, Wand2, Loader2, X } from "lucide-react"
+import { Upload, Loader2, X, DollarSign } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
-import { ResultModal } from "@/components/result-modal"
 import { Button3D } from "@/components/button-3d"
+import { PaymentModal } from "@/components/payment-modal"
 
 export default function ImageTransformer() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [prompt, setPrompt] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const [resultImage, setResultImage] = useState<string | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
-  const [showModal, setShowModal] = useState(false)
+  const [showPaymentModal, setShowPaymentModal] = useState(false)
   const { toast } = useToast()
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -26,7 +24,6 @@ export default function ImageTransformer() {
         setSelectedFile(file)
         const url = URL.createObjectURL(file)
         setPreviewUrl(url)
-        setResultImage(null)
       } else {
         toast({
           title: "Invalid file type",
@@ -43,63 +40,18 @@ export default function ImageTransformer() {
       URL.revokeObjectURL(previewUrl)
     }
     setPreviewUrl(null)
-    setResultImage(null)
   }
 
-  const handleTransform = async () => {
+  const handleStartPayment = () => {
     if (!selectedFile || !prompt.trim()) {
       toast({
         title: "Missing requirements",
-        description: "Please select an image and enter a transformation prompt",
+        description: "Please select an image and enter a prompt first",
         variant: "destructive",
       })
       return
     }
-
-    setIsLoading(true)
-
-    try {
-      const formData = new FormData()
-      formData.append("image", selectedFile)
-      formData.append("prompt", prompt)
-
-      const response = await fetch("/api/transform", {
-        method: "POST",
-        body: formData,
-      })
-
-      if (!response.ok) {
-        const errorData = await response.text()
-        throw new Error(`Failed to transform image: ${response.status}`)
-      }
-
-      const data = await response.json()
-      
-      if (!data.imageUrl) {
-        throw new Error("No image URL received from server")
-      }
-
-      setResultImage(data.imageUrl)
-      setShowModal(true)
-
-      toast({
-        title: "Transformation Complete",
-        description: "Your image has been successfully transformed",
-        duration: 2000,
-      })
-    } catch (error) {
-      toast({
-        title: "Transformation Failed",
-        description: `${error instanceof Error ? error.message : 'Unknown error'}`,
-        variant: "destructive",
-      })
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const handleModalClose = () => {
-    setShowModal(false)
+    setShowPaymentModal(true)
   }
 
   const examplePrompts = [
@@ -123,6 +75,11 @@ export default function ImageTransformer() {
             <p className="text-#666666 text-lg">
               Upload an image and describe how you want it transformed
             </p>
+            {/* Pricing Display */}
+            <div className="flex items-center justify-center gap-2 mt-4 p-3 bg-#fff9f6 border border-#ff6b35 rounded-lg">
+              <DollarSign className="w-5 h-5 text-#ff6b35" />
+              <span className="text-lg font-semibold text-#ff6b35">$0.20 per image</span>
+            </div>
           </div>
 
           {/* Main Container */}
@@ -172,7 +129,7 @@ export default function ImageTransformer() {
                       <img
                         src={previewUrl}
                         alt="Selected image"
-                        className="w-full h-auto max-h-96 object-cover mx-auto"
+                        className="w-full h-auto max-h-96 object-contain mx-auto"
                       />
                     </div>
                     
@@ -223,62 +180,31 @@ export default function ImageTransformer() {
 
                 {/* Transform Button */}
                 <Button3D
-                  onClick={handleTransform}
-                  disabled={!selectedFile || !prompt.trim() || isLoading}
+                  onClick={handleStartPayment}
                   variant="default"
                   size="lg"
-                  isLoading={isLoading}
-                  className="w-full text-lg font-semibold py-4"
+                  className="w-full flex items-center justify-center gap-3 text-lg font-semibold py-4"
                   style={{
-                    background: !selectedFile || !prompt.trim() || isLoading 
-                      ? 'linear-gradient(to bottom, #cccccc, #aaaaaa)'
-                      : 'linear-gradient(to bottom, #ff6b35, #e55a2e)'
+                    background: 'linear-gradient(to bottom, #ff6b35, #e55a2e)'
                   }}
                 >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="w-5 h-5 mr-3 animate-spin" />
-                      Transforming...
-                    </>
-                  ) : (
-                    <>
-                      <Wand2 className="w-5 h-5 mr-3" />
-                      Transform Image
-                    </>
-                  )}
+                  <DollarSign className="w-5 h-5" />
+                  Create Image ($0.20)
                 </Button3D>
               </div>
             </CardContent>
           </Card>
 
-          {/* Loading State */}
-          {isLoading && (
-            <Card className="border border-#e5e5e5">
-              <CardContent className="p-8">
-                <div className="flex flex-col items-center space-y-4">
-                  <div className="w-16 h-16 border-4 border-#e5e5e5 border-t-#ff6b35 rounded-full animate-spin"></div>
-                  <div className="text-center">
-                    <p className="text-lg font-medium text-#333333">
-                      Processing your image...
-                    </p>
-                    <p className="text-#666666 text-sm mt-1">
-                      This usually takes 15-30 seconds
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
         </div>
       </div>
 
-      {/* Results Modal */}
-      <ResultModal
-        isOpen={showModal}
-        onClose={handleModalClose}
-        originalImage={previewUrl}
-        transformedImage={resultImage}
+      {/* Payment Modal */}
+      <PaymentModal
+        isOpen={showPaymentModal}
+        onClose={() => setShowPaymentModal(false)}
+        selectedFile={selectedFile}
         prompt={prompt}
+        originalImage={previewUrl}
       />
     </>
   )

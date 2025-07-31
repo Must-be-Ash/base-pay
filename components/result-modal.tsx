@@ -2,14 +2,13 @@
 
 import React from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Download, X } from "lucide-react"
+import { X } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { Button3D } from "@/components/button-3d"
 
 interface ResultModalProps {
   isOpen: boolean
   onClose: () => void
-  originalImage: string | null
   transformedImage: string | null
   prompt: string
 }
@@ -17,7 +16,6 @@ interface ResultModalProps {
 export function ResultModal({ 
   isOpen, 
   onClose, 
-  originalImage, 
   transformedImage, 
   prompt 
 }: ResultModalProps) {
@@ -80,34 +78,17 @@ export function ResultModal({
         {/* Content - Focus on Results */}
         <div className="p-6 overflow-y-auto space-y-6">
           
-          {/* Original Image - Smaller */}
-          <div className="space-y-3">
-            <div className="flex items-center gap-2 text-sm font-medium text-#666666">
-              <div className="w-3 h-3 bg-#d4d4d4 rounded-full"></div>
-              Original
-            </div>
-            <div className="relative overflow-hidden rounded-lg border border-#e5e5e5 shadow-sm bg-white">
-              {originalImage && (
-                <img
-                  src={originalImage}
-                  alt="Original"
-                  className="w-full h-auto max-h-64 object-cover"
-                />
-              )}
-            </div>
-          </div>
-
           {/* Transformed Image - Main Focus */}
           <div className="space-y-3">
             <div className="flex items-center gap-2 text-sm font-medium text-#666666">
               <div className="w-3 h-3 bg-#ff6b35 rounded-full"></div>
-              Transformed
+              Your AI Generated Image
             </div>
             <div className="relative overflow-hidden rounded-lg border border-#ff6b35 shadow-lg bg-white">
               <img
                 src={transformedImage}
                 alt="Transformed result"
-                className="w-full h-auto max-h-96 object-cover"
+                className="w-full h-auto max-h-[70vh] object-contain"
               />
               
               {/* Success indicator */}
@@ -128,7 +109,6 @@ export function ResultModal({
                 background: 'linear-gradient(to bottom, #ff6b35, #e55a2e)'
               }}
             >
-              <Download className="w-5 h-5" />
               Download Image
             </Button3D>
             
